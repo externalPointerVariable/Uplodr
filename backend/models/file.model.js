@@ -1,19 +1,51 @@
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
-const fileSchema = new Schema(
-    {
-        file_key: { type: String, required: true, trim: true }, 
-        file_mimetype: { type: String, required: true, trim: true },
-        file_location: { type: String, required: true, trim: true },
-        file_name: { type: String, required: true, trim: true },
+
+const mediaSchema = new Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    {
-        timestamps: true,
-    }
+    file_key: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    file_mimetype: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    file_location: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    file_name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    file_size: {
+      type: Number,
+      required: true,
+    },
+    file_type: {
+      type: String,
+      enum: ["Image", "Video", "Other"],
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
-fileSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600 * 24 * 15 });
-const File = mongoose.model("File", fileSchema);
+mediaSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600 * 24 * 15 });
 
-module.exports = File;
+const Media = mongoose.model("Media", mediaSchema);
+
+module.exports = Media;

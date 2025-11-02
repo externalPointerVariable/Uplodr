@@ -23,6 +23,9 @@ const mediaRoutes = require("./routes/file.route");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/media", mediaRoutes);
+app.get("/", (req, res) => {
+  res.json({ message: "Backend is live ✅" });
+});
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../build")));

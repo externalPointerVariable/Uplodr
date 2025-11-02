@@ -66,3 +66,15 @@ exports.deleteMedia = async (req, res) => {
     res.status(500).json({ message: 'Server error during media deletion.' });
   }
 };
+
+exports.listMedia = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const mediaList = await Media.find({ user: userId }).sort({ createdAt: -1 });
+
+    res.status(200).json(mediaList);
+  } catch (error) {
+    console.error('List Error:', error.message);
+    res.status(500).json({ message: 'Server error during media listing.' });
+  }
+};

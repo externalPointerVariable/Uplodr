@@ -18,8 +18,8 @@ mongoose
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err.message));
 
-const authRoutes = require("./routes/authRoutes");
-const mediaRoutes = require("./routes/mediaRoutes");
+const authRoutes = require("./routes/user.route");
+const mediaRoutes = require("./routes/file.route");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/media", mediaRoutes);

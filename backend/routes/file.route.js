@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { s3UploadMiddleware } = require('../utils/s3Config');
+const { s3UploadMiddleware } = require('../utils/s3.config');
 const { uploadMedia, deleteMedia } = require('../controllers/mediaController');
 const { protect } = require('../middleware/authMiddleware');
 

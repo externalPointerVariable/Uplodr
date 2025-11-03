@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { UploadCloud, X } from "lucide-react";
-import { uploadMedia } from "../../services/api"; // adjust path if needed
+import { uploadMedia } from "../services/mediaService.js";
 
 const UploadModal = ({ onClose, onUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,9 +28,9 @@ const UploadModal = ({ onClose, onUpload }) => {
 
     setIsUploading(true);
     try {
-      const res = await uploadMedia(selectedFile); // your API call
-      onUpload(res.data); // pass uploaded media back to parent
-      onClose(); // close modal
+      const res = await uploadMedia(selectedFile);
+      onUpload(res.data);
+      onClose();
     } catch (err) {
       setUploadError(err.message || "Upload failed.");
     } finally {

@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../features/authSlice";
+import { logout } from "../features/authSlice.js";
 
 const Header = () => {
   const dispatch = useDispatch();

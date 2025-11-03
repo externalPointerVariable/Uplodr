@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "../../features/authSlice";
-import { loginUser, registerUser } from "../../services/api"; 
+import { login } from "../features/authSlice.js";
+import { loginUser, registerUser } from "../services/authService.js"; 
 
 const AuthForm = ({ type }) => {
   const dispatch = useDispatch();

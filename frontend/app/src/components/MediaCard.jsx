@@ -12,7 +12,7 @@ const MediaCard = ({ media, onDelete }) => {
         className="object-cover w-full h-full"
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = "/image-placeholder.png"; // fallback image
+          e.target.src = "/image-placeholder.png";
         }}
       />
     ) : (

@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { UploadCloud } from "lucide-react";
 import MediaCard from "../components/MediaCard";
 import UploadModal from "../components/UploadModal";
-import { getMediaList } from "../services/api";
+import { getMediaList, deleteMedia } from "../services/mediaService.js";
 
 const Dashboard = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -30,6 +30,15 @@ const Dashboard = () => {
 
     fetchMedia();
   }, [filterType]);
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteMedia(id);
+      setMediaList((prev) => prev.filter((m) => m._id !== id));
+    } catch (err) {
+      console.error("Failed to delete media:", err);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -88,12 +97,17 @@ const Dashboard = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {mediaList.map((media) => (
-            <MediaCard key={media._id} media={media} />
+            <MediaCard key={media._id} media={media} onDelete={handleDelete} />
           ))}
         </div>
       )}
 
-      {showUploadModal && <UploadModal onClose={() => setShowUploadModal(false)} />}
+      {showUploadModal && (
+        <UploadModal
+          onClose={() => setShowUploadModal(false)}
+          onUpload={(newMedia) => setMediaList((prev) => [newMedia, ...prev])}
+        />
+      )}
     </div>
   );
 };

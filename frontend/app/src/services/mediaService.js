@@ -1,9 +1,11 @@
+import config from "../config/config";
+
 export async function uploadMedia(file) {
   const token = localStorage.getItem("token");
   const formData = new FormData();
   formData.append("media", file);
 
-  const res = await fetch("http://localhost:5000/api/media/upload", {
+  const res = await fetch(`${config.backendEndpoint}/media/upload`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -22,7 +24,7 @@ export async function uploadMedia(file) {
 export async function getMediaList(filterType = "All") {
   const token = localStorage.getItem("token");
 
-  const res = await fetch("http://localhost:5000/api/media/", {
+  const res = await fetch(`${config.backendEndpoint}/media/`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -43,7 +45,7 @@ export async function getMediaList(filterType = "All") {
 export async function deleteMedia(id) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`http://localhost:5000/api/media/${id}`, {
+  const res = await fetch(`${config.backendEndpoint}/media/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,

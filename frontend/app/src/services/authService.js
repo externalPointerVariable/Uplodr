@@ -1,5 +1,7 @@
+import config from "../config/config";
+
 export async function registerUser({ name, email, password }) {
-  const res = await fetch("http://localhost:5000/api/auth/register", {
+  const res = await fetch(`${config.backendEndpoint}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +20,7 @@ export async function registerUser({ name, email, password }) {
 }
 
 export async function loginUser({ email, password }) {
-  const res = await fetch("http://localhost:5000/api/auth/login", {
+  const res = await fetch(`${config.backendEndpoint}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

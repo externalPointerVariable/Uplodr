@@ -14,27 +14,37 @@ const Dashboard = () => {
   const user = useSelector((state) => state.auth.userData);
   const filterButtons = ["All", "Image", "Video"];
 
-  useEffect(() => {
-    const fetchMedia = async () => {
-      setIsMediaLoading(true);
-      try {
-        const res = await getMediaList(filterType);
-        setMediaList(res.data || []);
-      } catch (err) {
-        console.error("Failed to fetch media:", err);
-        setMediaList([]);
-      } finally {
-        setIsMediaLoading(false);
-      }
-    };
+  const fetchMedia = async () => {
+    setIsMediaLoading(true);
+    try {
+      const res = await getMediaList();
+      const allMedia = res || [];
 
+      const filteredMedia =
+        filterType === "All"
+          ? allMedia
+          : allMedia.filter(
+              (item) =>
+                item.file_type?.toLowerCase() === filterType.toLowerCase()
+            );
+
+      setMediaList(filteredMedia);
+    } catch (err) {
+      console.error("Failed to fetch media:", err);
+      setMediaList([]);
+    } finally {
+      setIsMediaLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchMedia();
   }, [filterType]);
 
   const handleDelete = async (id) => {
     try {
       await deleteMedia(id);
-      setMediaList((prev) => prev.filter((m) => m._id !== id));
+      setMediaList((prev) => prev.filter((m) => m && m._id !== id));
     } catch (err) {
       console.error("Failed to delete media:", err);
     }
@@ -96,16 +106,18 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {mediaList.map((media) => (
-            <MediaCard key={media._id} media={media} onDelete={handleDelete} />
-          ))}
+          {mediaList
+            .filter((media) => media && media._id)
+            .map((media) => (
+              <MediaCard key={media._id} media={media} onDelete={handleDelete} />
+            ))}
         </div>
       )}
 
       {showUploadModal && (
         <UploadModal
           onClose={() => setShowUploadModal(false)}
-          onUpload={(newMedia) => setMediaList((prev) => [newMedia, ...prev])}
+          onUpload={fetchMedia}
         />
       )}
     </div>

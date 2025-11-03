@@ -23,7 +23,7 @@ const AuthForm = ({ type }) => {
         ? await loginUser({ email, password })
         : await registerUser({ name, email, password });
 
-      dispatch(login({ userData: payload.user }));
+      dispatch(login({ userData: payload }));
       localStorage.setItem("token", payload.token);
     } catch (err) {
       setError(err.message || "Authentication failed.");

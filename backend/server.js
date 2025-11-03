@@ -41,8 +41,12 @@ if (process.env.NODE_ENV === "production") {
   const buildPath = path.join(__dirname, "../build");
   app.use(express.static(buildPath));
 
-  app.get("/*", (req, res) => {
-    res.sendFile(path.resolve(buildPath, "index.html"));
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.url.startsWith("/api")) {
+      res.sendFile(path.resolve(buildPath, "index.html"));
+    } else {
+      next();
+    }
   });
 }
 

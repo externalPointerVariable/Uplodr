@@ -16,7 +16,6 @@ const s3UploadMiddleware = multer({
   storage: multerS3({
     s3: s3Client,
     bucket: BUCKET_NAME,
-    acl: "public-read",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
       const userId = req.user?._id?.toString() || "anonymous";

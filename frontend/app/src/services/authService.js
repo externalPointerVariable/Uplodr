@@ -9,12 +9,17 @@ export async function registerUser({ name, email, password }) {
     body: JSON.stringify({ name, email, password }),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Registration failed");
+  let data;
+  try {
+    data = await res.json();
+  } catch (err) {
+    throw new Error("Server did not return valid JSON");
   }
 
-  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Registration failed");
+  }
+
   localStorage.setItem("token", data.token);
   return data;
 }
@@ -28,12 +33,17 @@ export async function loginUser({ email, password }) {
     body: JSON.stringify({ email, password }),
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Login failed");
+  let data;
+  try {
+    data = await res.json();
+  } catch (err) {
+    throw new Error("Server did not return valid JSON");
   }
 
-  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Login failed");
+  }
+
   localStorage.setItem("token", data.token);
   return data;
 }

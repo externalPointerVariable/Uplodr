@@ -1,51 +1,87 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { getModel } = require('../db');
 
-const Schema = mongoose.Schema;
-
-const mediaSchema = new Schema(
+const fileSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
-    },
-    file_key: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    file_mimetype: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    file_location: {
-      type: String,
-      required: true,
-      trim: true,
+      index: true
     },
     file_name: {
       type: String,
       required: true,
-      trim: true,
+      trim: true
     },
     file_size: {
       type: Number,
-      required: true,
+      required: true
     },
-    file_type: {
+    file_mimetype: {
       type: String,
-      enum: ["Image", "Video", "Other"],
       required: true,
+      trim: true
     },
+    file_extension: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    file_category: {
+      type: String,
+      enum: ['image', 'video', 'audio', 'document', 'code', 'archive', 'other'],
+      default: 'other',
+      index: true
+    },
+    file_key: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    file_location: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    folder: {
+      type: String,
+      trim: true,
+      default: '/'
+    },
+    isStarred: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    isTrashed: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    trashedAt: {
+      type: Date,
+      default: null
+    },
+    downloadCount: {
+      type: Number,
+      default: 0
+    },
+    metadata: {
+      type: Object,
+      default: {}
+    }
   },
   {
-    timestamps: true,
+    timestamps: true
   }
 );
 
-mediaSchema.index({ createdAt: 1 }, { expireAfterSeconds: 3600 * 24 * 15 });
+let MongooseFile;
+try {
+  MongooseFile = mongoose.model('File', fileSchema);
+} catch (e) {
+  MongooseFile = mongoose.models.File;
+}
 
-const Media = mongoose.model("Media", mediaSchema);
-
-module.exports = Media;
+module.exports = getModel('File', MongooseFile);

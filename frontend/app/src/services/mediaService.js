@@ -1,9 +1,13 @@
 import config from "../config/config";
 
-export async function uploadMedia(file) {
+// ✅ UPLOAD
+export async function uploadMedia(file, folder, relativePath) {
   const token = localStorage.getItem("token");
+
   const formData = new FormData();
   formData.append("media", file);
+  formData.append("folder", folder || "Default");
+  formData.append("relativePath", relativePath || file.name);
 
   const res = await fetch(`${config.backendEndpoint}/media/upload`, {
     method: "POST",
@@ -13,35 +17,59 @@ export async function uploadMedia(file) {
     body: formData,
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Upload failed");
+  let data;
+  const text = await res.text();
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (parseError) {
+    data = { message: text };
   }
 
-  return res.json();
+  if (!res.ok) {
+    throw new Error(data?.message || `Upload failed (${res.status})`);
+  }
+
+  return data?.media || data;
 }
 
-export async function getMediaList(filterType = "All") {
+// ✅ LIST
+export async function getMediaList(filterType = "All", folder = "All") {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${config.backendEndpoint}/media/`, {
+  const queryParams = [];
+  if (folder && folder !== "All") {
+    queryParams.push(`folder=${encodeURIComponent(folder)}`);
+  }
+
+  const url = `${config.backendEndpoint}/media${queryParams.length ? `?${queryParams.join("&")}` : ""}`;
+
+  const res = await fetch(url, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Failed to fetch media");
+  let data;
+  const text = await res.text();
+  try {
+    data = text ? JSON.parse(text) : [];
+  } catch (parseError) {
+    data = { message: text };
   }
 
-  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data?.message || "Failed to fetch media");
+  }
+
   return filterType === "All"
     ? data
-    : data.filter((item) => item.file_type === filterType);
+    : data.filter((item) =>
+        (item.file_type || "").toLowerCase().includes(filterType.toLowerCase())
+      );
 }
 
+// ✅ DELETE
 export async function deleteMedia(id) {
   const token = localStorage.getItem("token");
 
@@ -52,10 +80,42 @@ export async function deleteMedia(id) {
     },
   });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Delete failed");
+  let data;
+  const text = await res.text();
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (parseError) {
+    data = { message: text };
   }
 
-  return res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Delete failed");
+  }
+
+  return data;
+}
+
+export async function deleteFolder(folderName) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${config.backendEndpoint}/media/folder?folder=${encodeURIComponent(folderName)}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  let data;
+  const text = await res.text();
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (parseError) {
+    data = { message: text };
+  }
+
+  if (!res.ok) {
+    throw new Error(data.message || "Delete folder failed");
+  }
+
+  return data;
 }

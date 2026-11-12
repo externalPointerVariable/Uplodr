@@ -2,12 +2,17 @@ import { Trash2 } from "lucide-react";
 
 const MediaCard = ({ media, onDelete }) => {
   const isImage = media.file_type === "Image";
-  const formattedDate = new Date(media.uploadDate).toLocaleDateString();
+  const formattedDate = new Date(media.createdAt || media.updatedAt || Date.now()).toLocaleDateString();
 
   const getPlaceholderIcon = () => {
-    return isImage ? (
+    const imageUrl = media.file_location || (media.file_key ? `/uploads/${media.file_key.split('/').pop()}` : null);
+    if (!isImage) {
+      return <div className="text-gray-500 text-sm">Video Preview Unavailable</div>;
+    }
+
+    return (
       <img
-        src={media.file_location}
+        src={imageUrl}
         alt={media.file_name}
         className="object-cover w-full h-full"
         onError={(e) => {
@@ -15,8 +20,6 @@ const MediaCard = ({ media, onDelete }) => {
           e.target.src = "/image-placeholder.png";
         }}
       />
-    ) : (
-      <div className="text-gray-500 text-sm">Video Preview Unavailable</div>
     );
   };
 
@@ -28,8 +31,12 @@ const MediaCard = ({ media, onDelete }) => {
 
       <div className="p-4">
         <div className="mb-2">
-          <p className="text-sm font-semibold text-gray-800 truncate">{media.file_name}</p>
-          <span className="text-xs text-gray-500">{media.file_type} • {formattedDate}</span>
+          <p className="text-sm font-semibold text-gray-800 truncate">
+            {(media.file_relative_path || media.file_name).split('/').pop()}
+          </p>
+          <span className="text-xs text-gray-500">
+            {media.file_type} • {formattedDate} • {media.folder || "Default"}
+          </span>
         </div>
 
         <div className="flex space-x-2">
